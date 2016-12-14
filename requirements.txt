@@ -1,5 +1,6 @@
 requests==2.12.1
 requests_mock==1.1.0
-pandas
 ratelimit==1.1.0
 docopt
+hypothesis
+pytz

@@ -1,6 +1,5 @@
-from Arcas.tools import Api
+from arcas.tools import Api
 from xml.etree import ElementTree
-import hashlib
 
 
 class Arxiv(Api):
@@ -10,59 +9,54 @@ class Arxiv(Api):
     def __init__(self):
         self.standard = 'http://export.arxiv.org/api/query?search_query='
 
-    @staticmethod
-    def to_json(article):
+    def to_json(self, article):
         """A function which takes a dictionary with structure of the arXiv
         results and transform it to a standardized format.
         """
-        keys = ['key', 'unique_key', 'title', 'abstract', 'author', 'date',
-                'journal', 'pages', 'labels', 'read', 'key_word', 'provelance',
-                'list_strategies']
-
         old_keys = list(article.keys())
-        for i in range(len(old_keys)):
-            dis, keep = old_keys[i].split('}')
-            article[keep] = article.pop(old_keys[i])
+        for i in old_keys:
+            keep = i.split('}')
+            article[keep[-1]] = article.pop(i)
 
-        article['author'] = []
+        article['author'], article['key_word'] = [], []
+
         for i in article['name'].split(','):
             article['author'].append({'name': i})
-
         article['date'] = {'year': int(article['published'].split('-')[0])}
         try:
             article['journal'] = article.pop('journal_ref')
         except:
             article['journal'] = "arXiv"
-        article['key_word'] = []
-        if article['primary_category'] is not None:
-            for i in article['primary_category']:
-                article['key_word'].append({'key_work': i})
+        try:
+            if article['primary_category']:
+                for i in article['primary_category']:
+                    article['key_word'].append({'key_word': i})
+        except:
+            pass
+
         article['abstract'] = article.pop('summary')
-        article['labels'], article['list_strategies'] = [], []
         article['pages'] = ""
-        article['provelance'] = 'arXiv'
+        article['provenance'] = 'arXiv'
         article['read'] = False
 
-        year = article['date']['year']
-        full_name = article['author'][0]['name'].split(' ')
-        article['key'] = '{}{}'.format(full_name[-1], year)
+        article['key'], article['unique_key'] = self.create_keys(article)
 
-        string = '{}{}{}{}'.format(full_name[-1], article['title'], year,
-                                   article['abstract'])
-        hash_object = hashlib.md5(string.encode('utf-8'))
-        article['unique_key'] = hash_object.hexdigest()
-
-        post = {key: article[key] for key in keys}
+        post = {key: article[key] for key in self.keys()}
 
         return post
 
-    @staticmethod
-    def parse(root):
+    def parse(self, root):
         """Removing unwanted branches."""
         parents = root.getchildren()
+        articles = []
         for _ in range(7):
             parents.remove(parents[0])
-        return parents
+        if not parents:
+            articles = False
+        else:
+            for record in parents:
+                articles.append(self.xml_to_dict(record))
+        return articles
 
     @staticmethod
     def parameters_fix(arguments):
@@ -72,7 +66,7 @@ class Arxiv(Api):
         if arguments['-t'] is not None:
             parameters.append('ti:{}'.format(arguments['-t']))
         if arguments['-b'] is not None:
-            parameters.append('ab:{}'.format(arguments['-b']))
+            parameters.append('abs:{}'.format(arguments['-b']))
         if arguments['-r'] is not None:
             parameters.append('max_results={}'.format(arguments['-r']))
         if arguments['-s'] is not None:

@@ -1,0 +1,48 @@
+"""Arcas. A library to facilitate scraping of APIs for scholarly resources.
+
+Usage:
+    arcas_scrape  [-h] [-p API] [-a AUTHOR] [-t TITLE] [-b ABSTRACT] [-y
+    YEAR]
+              [-r RECORDS] [-s START] [-v VALIDATE] [-f FILENAME]
+    arcas_scrape --version
+
+
+Options:
+    -h --help              Show this
+    --version              Show version.
+    -p API                 The online API, from a given list, to parse [default: arxiv]
+    -a AUTHOR              Terms to search for in Author
+    -t TITLE               Terms to search for in Title
+    -b ABSTRACT            Terms to search for in the Abstract
+    -y YEAR                Terms to search for in Year
+    -r RECORDS             Number of records to fetch
+    -s START               Sequence number of first record to fetch
+    -v VALIDATE            Checks if query returned with arguments asked [default: False]
+    -f FILENAME            Name of json file [default: results]
+"""
+
+from arcas import *
+import ast
+from docopt import docopt
+
+if __name__ == '__main__':
+    arguments = docopt(__doc__, version='Arcas 0.0.1')
+
+    # list of apis
+    apis = {"ieee": Ieee, "arxiv": Arxiv, "nature": Nature, "springer":
+            Springer, "plos": Plos}
+    # create instance of selected api class
+    api = apis[arguments['-p']]()
+
+    # pass validate argument
+    validate = ast.literal_eval(arguments['-v'])
+
+    # generate the parameters
+    parameters = api.parameters_fix(arguments)
+    # generate url
+    url = api.create_url_search(parameters)
+    print(url)
+
+    # generate the formalized json and export it
+    post = api.run(url, arguments, validate)
+    write = api.export(post, filename=arguments['-f'])
