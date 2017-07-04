@@ -1,4 +1,5 @@
 from arcas.tools import Api
+from xml.etree import ElementTree
 
 
 class Nature(Api):
@@ -103,3 +104,8 @@ class Nature(Api):
             parameters.append('startRecord={}'.format(start))
 
         return parameters
+
+    @staticmethod
+    def get_root(response):
+        root = ElementTree.fromstring(response.text)
+        return root

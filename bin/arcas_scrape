@@ -15,8 +15,8 @@ Options:
     -t TITLE               Terms to search for in Title
     -b ABSTRACT            Terms to search for in the Abstract
     -y YEAR                Terms to search for in Year
-    -r RECORDS             Number of records to fetch
-    -s START               Sequence number of first record to fetch
+    -r RECORDS             Number of records to fetch [default: 1]
+    -s START               Sequence number of first record to fetch [default: 1]
     -v VALIDATE            Checks if query returned with arguments asked [default: False]
     -f FILENAME            Name of json file [default: results.json]
 """
