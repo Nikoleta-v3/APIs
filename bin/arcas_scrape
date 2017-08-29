@@ -26,7 +26,7 @@ import ast
 from docopt import docopt
 
 if __name__ == '__main__':
-    arguments = docopt(__doc__, version='Arcas 0.0.1')
+    arguments = docopt(__doc__, version='Arcas 0.0.2')
 
     # list of apis
     apis = {"ieee": Ieee, "arxiv": Arxiv, "nature": Nature, "springer":

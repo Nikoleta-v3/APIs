@@ -1,22 +1,33 @@
+# pycharm
 .idea
-arcas/__pycache__/
-arcas/IEEE/__pycache__/
-arcas/arXiv/__pycache__/
-arcas/PLOS/__pycache__/
-arcas/Springer/__pycache__/
-arcas/nature/__pycache__/
+
+# pycache
+*__pycache__/
+
+# several other files
 status_report
 result.json
-*__pycache__*
 *arcas.egg-info*
+
+# docs
 build/
 dist/
 docs/_build
+
+#hypothesis
 .hypothesis/
-results.json
+
+# notebooks
 Notes.ipynb
 .ipynb_checkpoints
 Structures.ipynb
 
-logo.tex
+# logo files
+*.tex
+*.log
+*.aux 
+*.nav
+*.out
+*.snm
+*.toc
 beamercolorthemesolarized.sty
